@@ -38,7 +38,7 @@ extern void MQTTtoLORA(char* topicOri, JsonObject& RFdata);
 
 //Default parameters used when the parameters are not set in the json data
 #ifndef LORA_BAND
-#  define LORA_BAND 868E6
+#  define LORA_BAND 433E6
 #endif
 #ifndef LORA_SIGNAL_BANDWIDTH
 #  define LORA_SIGNAL_BANDWIDTH 125E3
@@ -91,7 +91,7 @@ extern void MQTTtoLORA(char* topicOri, JsonObject& RFdata);
 #endif
 
 #ifndef LORA_RST
-#  define LORA_RST 14 // GPIO14 -- SX1278's RESET
+#  define LORA_RST 23 // GPIO23 -- SX1278's RESET
 #endif
 
 #ifndef LORA_DI0

@@ -4,6 +4,7 @@
 **/.DS_Store
 node_modules
 *.ps1
-main/certs/private*
+main/certs/*
+main/User_config.h
 lib/*
 !lib/esp32-bt-lib

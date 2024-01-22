@@ -151,6 +151,9 @@ struct GfSun2000Data {};
 #ifdef ZsensorADC
 #  include "config_ADC.h"
 #endif
+#ifdef ZsensorPMU
+#  include "config_PMU.h"
+#endif
 #ifdef ZsensorBH1750
 #  include "config_BH1750.h"
 #endif
@@ -204,6 +207,9 @@ struct GfSun2000Data {};
 #endif
 #ifdef ZsensorTouch
 #  include "config_Touch.h"
+#endif
+#ifdef ZsensorGPS
+#  include "config_GPS.h"
 #endif
 #ifdef ZmqttDiscovery
 #  include "config_mqttDiscovery.h"
@@ -1298,6 +1304,10 @@ void setup() {
   setupGPIOKeyCode();
   modules.add(ZsensorGPIOKeyCode);
 #endif
+#ifdef ZsensorGPS
+  setupGPS();
+  modules.add(ZsensorGPS);
+#endif  
 #ifdef ZactuatorFASTLED
   setupFASTLED();
   modules.add(ZactuatorFASTLED);
@@ -1321,6 +1331,10 @@ void setup() {
 #ifdef ZsensorADC
   setupADC();
   modules.add(ZsensorADC);
+#endif
+#ifdef ZsensorPMU
+  setupPMU();
+  modules.add(ZsensorPMU);
 #endif
 #ifdef ZsensorTouch
   setupTouch();
@@ -2175,8 +2189,14 @@ void loop() {
 #ifdef ZsensorADC
       MeasureADC(); //Addon to measure the analog value of analog pin
 #endif
+#ifdef ZsensorPMU
+      MeasurePMU(); //Addon to measure the analog value of analog pin
+#endif
 #ifdef ZsensorTouch
       MeasureTouch();
+#endif
+#ifdef ZsensorGPS
+      MeasureGPS();
 #endif
 #ifdef ZgatewayLORA
       LORAtoMQTT();
