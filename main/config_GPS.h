@@ -29,8 +29,7 @@
 #include <TinyGPS++.h>
 
 extern void setupGPS();
-extern void GPStoMQTT();
-extern void MQTTtoGPS(char* topicOri, JsonObject& GPSdata);
+extern void MeasureGPS();
 
 /*-------------------GPS topics & parameters----------------------*/
 
@@ -38,7 +37,7 @@ extern void MQTTtoGPS(char* topicOri, JsonObject& GPSdata);
 #define subjectGPStoMQTT "/GPStoMQTT"
 
 // Time between each GPS measurement
-#define TimeBetweenReadingGPS 1000 // ms
+#define TimeBetweenReadingGPS 120000 // ms
 
 // setting to specify mode used for sending MQTT messages:
 //   0: RAW: all recieved input at GPS interface is collected in single MQTT message

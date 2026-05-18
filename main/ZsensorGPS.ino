@@ -107,14 +107,20 @@ void setupGPS() {
 
 void MeasureGPS(){
   if (GPSStream->available() > 0 && gps.encode(GPSStream->read())) {
-    if (millis() > (timeGPS + TimeBetweenReadingGPS)) {
+    if (millis() > (timeGPS + TimeBetweenReadingGPS) && gps.time.isValid()) {
       timeGPS = millis();
       Log.trace(F("Creating GPS buffer" CR));
       StaticJsonDocument<JSON_MSG_BUFFER> GPSdataBuffer;
       JsonObject GPSdata = GPSdataBuffer.to<JsonObject>();
+
+      //Satellites
+      GPSdata["satellites"] = gps.satellites.value();
+
       //Location
       GPSdata["latitude"] = gps.location.lat();
       GPSdata["longitude"] = gps.location.lng();
+
+      Log.trace(F("GPS location: %D, %D" CR), gps.location.lat(), gps.location.lng());
      
       //Altitude
       GPSdata["altitude"] = gps.altitude.meters();
