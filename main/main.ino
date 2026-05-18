@@ -26,7 +26,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "User_config.h"
-
+#include <chrono>
+#include <cstdint>
 // States of the gateway
 // Wm setup
 // Connected to MQTT
@@ -2360,8 +2361,11 @@ void syncNTP() {
   }
 }
 
-int unixtimestamp() {
-  return time(nullptr);
+long long unixtimestamp() {
+    auto now = std::chrono::system_clock::now();
+    auto now_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now);
+    auto value = now_ms.time_since_epoch();
+  return value.count();
 }
 
 String UTCtimestamp() {
