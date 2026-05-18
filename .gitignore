@@ -8,3 +8,4 @@ main/certs/*
 main/User_config.h
 lib/*
 !lib/esp32-bt-lib
+main/ZsensorPMU

@@ -1,0 +1,87 @@
+#include <LoRa.h>
+#include <SPI.h>
+
+#define DEV_MODE true  // Set to false for final deployment
+
+#ifdef DEV_MODE
+#include "SSD1306.h"
+#endif
+
+#define SCK 18 // GPIO18 -- SX1278's SCK
+#define MISO 19 // GPIO19 -- SX1278's MISnO
+#define MOSI 23 // GPIO23 -- SX1278's MOSI
+#define SS  5 // GPIO5 -- SX1278's CS
+#define RST 4 // GPIO4 -- SX1278's RESET
+#define DI0 26 // GPIO26 -- SX1278's IRQ(Interrupt Request)
+#define BAND 433E6
+#define NODE_ID 1
+
+#ifdef DEV_MODE
+SSD1306 display(0x3c, 21, 22);
+#endif
+
+unsigned long counter = 0;
+
+// Interrupt handler prototype
+void IRAM_ATTR onTimerInterrupt();
+
+void setup() {
+  pinMode(2, OUTPUT); // LED pin
+
+  SPI.begin(SCK, MISO, MOSI, SS);
+  LoRa.setPins(SS, RST, DI0);
+  if (!LoRa.begin(BAND)) {
+    while (1);
+  }
+  LoRa.setSpreadingFactor(7);
+  LoRa.setSignalBandwidth(125E3);
+  LoRa.setCodingRate4(5);
+  LoRa.setSyncWord(0x12);
+  LoRa.setPreambleLength(8);
+  LoRa.enableCrc();
+  LoRa.setTxPower(14);
+
+
+#if DEV_MODE
+  display.init();
+  display.flipScreenVertically();
+  display.setFont(ArialMT_Plain_10);
+#endif
+
+  // Configure timer interrupt (replace with desired wakeup interval)
+  esp_timer_create_periodic_isr(ESP_TIMER_RTC, 10000000, onTimerInterrupt, nullptr); // 10 seconds
+  esp_timer_start(ESP_TIMER_RTC);
+}
+
+void IRAM_ATTR onTimerInterrupt() {
+  // Timer interrupt handler
+  esp_timer_stop(ESP_TIMER_RTC); // Stop timer (optional)
+  
+#if DEV_MODE
+  display.clear();
+  display.setTextAlignment(TEXT_ALIGN_LEFT);
+  display.setFont(ArialMT_Plain_10);
+  display.drawString(0, 0, "Sending packet: ");
+  display.drawString(90, 0, String(counter));
+#endif
+
+  // Build json string to send
+  String msg = "{\"id\":" + String(NodeId) + ",\"msg_id\":" + String(counter) + "}";
+
+  // Attempt to send data over LoRa
+  if (LoRa.beginPacket()) {
+    LoRa.print(msg);
+    LoRa.endPacket();
+#if DEV_MODE
+    display.drawString(0, 15, String(NodeId));
+    display.display();
+#endif
+  }
+
+  counter++;
+}
+
+void loop() {
+  // This loop remains empty as the program enters deep sleep after setup
+  // and wakes up based on the timer interrupt
+}
